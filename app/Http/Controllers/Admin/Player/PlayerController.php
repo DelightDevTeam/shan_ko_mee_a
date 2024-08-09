@@ -232,12 +232,12 @@ class PlayerController extends Controller
 
         try {
             $inputs = $request->validated();
-            $inputs['refrence_id'] = $this->getRefrenceId();
+            //$inputs['refrence_id'] = $this->getRefrenceId();
 
             $agent = Auth::user();
             $cashIn = $inputs['amount'];
 
-            if ($cashIn > $agent->balanceFloat) {
+            if ($cashIn > $agent->wallet->balance) {
 
                 return redirect()->back()->with('error', 'You do not have enough balance to transfer!');
             }

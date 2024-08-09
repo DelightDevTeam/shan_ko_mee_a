@@ -60,7 +60,13 @@
               <td>
               <small class="badge bg-gradient-{{ $user->status == 1 ? 'success' : 'danger' }}">{{ $user->status == 1 ? "active" : "inactive" }}</small>
               </td>
-              <td>{{number_format($user->wallet->balance,2) }}</td>
+              <td>
+                 @if ($user->wallet)
+            {{ number_format($user->wallet->balance, 2) }}
+                  @else
+                      No Wallet
+                  @endif
+              </td>
               <td>
                 @if ($user->status == 1)
                 <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();" class="me-2" href="#" data-bs-toggle="tooltip" data-bs-original-title="Active Player">

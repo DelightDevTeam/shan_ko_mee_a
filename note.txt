@@ -1,0 +1,5 @@
+sudo chown -R www-data:www-data /var/www/html/shan_ko_mee_a/storage
+sudo chmod -R 775 /var/www/html/shan_ko_mee_a/storage
+sudo mkdir -p /var/www/html/shan_ko_mee_a/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/html/shan_ko_mee_a/bootstrap/cache
+sudo chmod -R 775 /var/www/html/shan_ko_mee_a/bootstrap/cache

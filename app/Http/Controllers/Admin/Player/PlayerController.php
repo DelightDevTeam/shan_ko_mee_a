@@ -222,10 +222,10 @@ class PlayerController extends Controller
         return view('admin.player.cash_in', compact('player'));
     }
 
-    public function makeCashIn(TransferLogRequest $request, User $player)
+    public function makeCashIn(TransferLogRequest $request, $id)
     {
         abort_if(
-            Gate::denies('make_transfer') || ! $this->ifChildOfParent(request()->user()->id, $player->id),
+            Gate::denies('make_transfer') || ! $this->ifChildOfParent(request()->user()->id, $id),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
@@ -233,7 +233,7 @@ class PlayerController extends Controller
         try {
             $inputs = $request->validated();
             //$inputs['refrence_id'] = $this->getRefrenceId();
-
+            $player = User::findOrFail($id);
             $agent = Auth::user();
             $cashIn = $inputs['amount'];
 

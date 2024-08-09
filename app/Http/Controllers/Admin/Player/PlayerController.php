@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Admin\Player;
 
-use App\Enums\TransactionName;
+use Exception;
+use App\Models\User;
 use App\Enums\UserType;
+use App\Models\Admin\Wallet;
+use Illuminate\Http\Request;
+use App\Services\UserService;
+use App\Enums\TransactionName;
+use App\Services\WalletService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PlayerRequest;
-use App\Http\Requests\TransferLogRequest;
-use App\Models\User;
-use App\Services\UserService;
-use App\Services\WalletService;
-use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\TransferLogRequest;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -113,6 +114,8 @@ class PlayerController extends Controller
 
             $player = User::create($userPrepare);
             $player->roles()->sync(self::PLAYER_ROLE);
+            // Create wallet for the new user
+            Wallet::create(['user_id' => $player->id, 'balance' => 0]);   
 
             if (isset($inputs['amount'])) {
                 app(WalletService::class)->transfer($agent, $player, $inputs['amount'], TransactionName::CreditTransfer);
@@ -222,8 +225,9 @@ class PlayerController extends Controller
         return view('admin.player.cash_in', compact('player'));
     }
 
-    public function makeCashIn(TransferLogRequest $request, $id)
+     public function makeCashIn(TransferLogRequest $request, $id)
     {
+
         abort_if(
             Gate::denies('make_transfer') || ! $this->ifChildOfParent(request()->user()->id, $id),
             Response::HTTP_FORBIDDEN,
@@ -232,21 +236,30 @@ class PlayerController extends Controller
 
         try {
             $inputs = $request->validated();
-            //$inputs['refrence_id'] = $this->getRefrenceId();
             $player = User::findOrFail($id);
             $agent = Auth::user();
             $cashIn = $inputs['amount'];
 
-            if ($cashIn > $agent->wallet->balance) {
+            Log::info('player ID: ' . $player->id);
+             $wallet = $player->wallet;
 
-                return redirect()->back()->with('error', 'You do not have enough balance to transfer!');
-            }
+        if ($wallet) {
+            Log::info('Wallet ID: ' . $wallet->id);
+        } else {
+            Log::error('Wallet not found for user ID: ' . $player->id);
+            // Handle missing wallet (e.g., create a new wallet)
+        }
+             if ($cashIn > $agent->wallet->balance) {
+            throw new \Exception('You do not have enough balance to transfer!');
+        }
 
+            // Transfer money
             app(WalletService::class)->transfer($agent, $player, $request->validated('amount'), TransactionName::CreditTransfer);
-
-            return redirect()->back()
-                ->with('success', 'CashIn submitted successfully!');
+             
+            return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
+
+            session()->flash('error', $e->getMessage());
 
             return redirect()->back()->with('error', $e->getMessage());
         }

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Enums\UserType;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
+use App\Models\Admin\Wallet;
 use Illuminate\Http\Request;
 use App\Enums\TransactionName;
 use App\Enums\TransactionType;
@@ -94,6 +95,8 @@ class AgentController extends Controller
 
         $agent = User::create($userPrepare);
         $agent->roles()->sync(self::AGENT_ROLE);
+        Wallet::create(['user_id' => $agent->id, 'balance' => 0]);   
+
 
         if (isset($inputs['amount'])) {
             app(WalletService::class)->transfer($master, $agent, $inputs['amount'], TransactionName::CreditTransfer);

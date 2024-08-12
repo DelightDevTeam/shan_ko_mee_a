@@ -59,20 +59,20 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $agent = User::where('referral_code', $request->referral_code)->first();
-        if($agent)
-        {
+        // $agent = User::where('referral_code', $request->referral_code)->first();
+        // if($agent)
+        // {
             $inputs = $request->validated();
 
             $userPrepare = [
-                    'phone' => $request->phone,
+                    //'phone' => $request->phone,
                     'name' => $request->name,
                     'user_name' => $this->generateRandomString(),
                     'password' => Hash::make($inputs['password']),
-                    'payment_type_id' => $request->payment_type_id,
-                    'account_name' => $request->account_name,
-                    'account_number' => $request->account_number,
-                    'agent_id' => $agent->id,
+                    //'payment_type_id' => $request->payment_type_id,
+                    //'account_name' => $request->account_name,
+                    //'account_number' => $request->account_number,
+                    //'agent_id' => $agent->id,
                     'type' => UserType::Player
                 ];
 
@@ -80,9 +80,9 @@ class AuthController extends Controller
             $player->roles()->sync(self::PLAYER_ROLE);
 
             return $this->success(new RegisterResource($player), 'User register successfully.');
-        }else{
-            return $this->error('', 'Not Found Agent', 401);
-        }
+        // }else{
+        //     return $this->error('', 'Not Found Agent', 401);
+        // }
 
     }
 

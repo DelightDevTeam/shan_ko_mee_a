@@ -22,10 +22,6 @@ class DatabaseSeeder extends Seeder
             BannerAdsSeeder::class,
             BannerSeeder::class,
             BannerTextSeeder::class,
-            GameTypeTableSeeder::class,
-            ProductTableSeeder::class,
-            GameTypeProductTableSeeder::class
-            
         ]);
     }
 }

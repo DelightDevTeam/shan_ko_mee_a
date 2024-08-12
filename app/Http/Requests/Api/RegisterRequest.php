@@ -11,7 +11,7 @@ class RegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|min:3|string',
+            'user_name' => 'required|min:3|string',
+            'password' => 'required|min:6|confirmed',
+            //'phone' => 'required',
+            //'referral_code' =>'required|exists:users,referral_code',
+            //'payment_type_id' => 'required',
+            //'account_name' => 'required|min:3|string',
+            //'account_number' => ['required', 'regex:/^[0-9]+$/'],
         ];
     }
 }

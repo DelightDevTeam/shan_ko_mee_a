@@ -69,37 +69,83 @@ class WalletService
     //         'target_user_id' => $user->id
     //     ]);
     // }
-
     private function logTransaction(User $user, float $amount, TransactionName $transactionName, string $type, User $targetUser = null)
 {
-    if (!$user->wallet) {
-        throw new \Exception('User does not have a wallet');
-    }
+    try {
+        if (!$user->wallet) {
+            throw new \Exception('User does not have a wallet');
+        }
 
-    $meta = $type === 'withdraw'
-        ? self::buildTransferMeta($user, $targetUser, $transactionName)
-        : self::buildDepositMeta($user, $targetUser, $transactionName);
+        $meta = $type === 'withdraw'
+            ? self::buildTransferMeta($user, $targetUser, $transactionName)
+            : self::buildDepositMeta($user, $targetUser, $transactionName);
+
         $wallet = $user->wallet;
 
-    if ($wallet) {
-    Log::info('Service Log: Wallet ID: ' . $wallet->id);
-} else {
-    Log::error('Service log: Wallet not found for user ID: ' . $user->id);
+        Log::info('Creating transaction with data: ', [
+            'user_id' => $user->id,
+            'wallet_id' => $wallet->id,
+            'amount' => $amount,
+            'transaction_name' => $transactionName->value,
+            'type' => $type,
+            'payable_type' => get_class($user),
+            'payable_id' => $user->id,
+            'target_user_id' => $targetUser ? $targetUser->id : null
+        ]);
+
+        Transaction::create([
+            'user_id' => $user->id,
+            'wallet_id' => $wallet->id,
+            'amount' => $amount,
+            'transaction_name' => $transactionName->value,
+            'type' => $type,
+            'meta' => json_encode($meta),
+            'uuid' => Str::uuid(),
+            'payable_type' => get_class($user),
+            'payable_id' => $user->id,
+            'target_user_id' => $targetUser ? $targetUser->id : null
+        ]);
+
+        Log::info('Transaction created successfully.');
+
+    } catch (\Exception $e) {
+        Log::error('Transaction creation failed: ' . $e->getMessage());
+    }
 }
 
-    Transaction::create([
-        'user_id' => $user->id,
-        'wallet_id' => $wallet->id,
-        'amount' => $amount,
-        'transaction_name' => $transactionName->value,
-        'type' => $type,
-        'meta' => json_encode($meta),
-        'uuid' => Str::uuid(),
-        'payable_type' => get_class($user),
-        'payable_id' => $user->id,
-        'target_user_id' => $user->id
-    ]);
-}
+    // still use 
+
+//     private function logTransaction(User $user, float $amount, TransactionName $transactionName, string $type, User $targetUser = null)
+// {
+//     if (!$user->wallet) {
+//         throw new \Exception('User does not have a wallet');
+//     }
+
+//     $meta = $type === 'withdraw'
+//         ? self::buildTransferMeta($user, $targetUser, $transactionName)
+//         : self::buildDepositMeta($user, $targetUser, $transactionName);
+//         $wallet = $user->wallet;
+
+//     if ($wallet) {
+//     Log::info('Service Log: Wallet ID: ' . $wallet->id);
+// } else {
+//     Log::error('Service log: Wallet not found for user ID: ' . $user->id);
+// }
+
+//     Transaction::create([
+//         'user_id' => $user->id,
+//         'wallet_id' => $wallet->id,
+//         'amount' => $amount,
+//         'transaction_name' => $transactionName->value,
+//         'type' => $type,
+//         'meta' => json_encode($meta),
+//         'uuid' => Str::uuid(),
+//         'payable_type' => get_class($user),
+//         'payable_id' => $user->id,
+//         //'target_user_id' => $user->id
+//         'target_user_id' => $targetUser ? $targetUser->id : $user->id
+//     ]);
+// }
 
 
     public static function buildTransferMeta(User $user, User $targetUser, TransactionName $transactionName, array $meta = [])

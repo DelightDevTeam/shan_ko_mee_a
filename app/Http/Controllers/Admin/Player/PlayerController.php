@@ -96,7 +96,7 @@ class PlayerController extends Controller
             $agent = Auth::user();
             $inputs = $request->validated();
 
-            if (isset($inputs['amount']) && $inputs['amount'] > $agent->balanceFloat) {
+            if (isset($inputs['amount']) && $inputs['amount'] > $agent->wallet->balance) {
                 throw ValidationException::withMessages([
                     'amount' => 'Insufficient balance for transfer.',
                 ]);

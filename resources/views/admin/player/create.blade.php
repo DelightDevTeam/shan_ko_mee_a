@@ -140,7 +140,7 @@
 
             <div class="custom-form-group">
               <p>Max Balance : </p>
-              <span class="badge badge-sm bg-gradient-success">{{auth()->user()->balanceFloat}}</span>
+              <span class="badge badge-sm bg-gradient-success">{{auth()->user()->wallet->balance}}</span>
             </div>
             <div class="custom-form-group">
               <label for="title">Amount</label>

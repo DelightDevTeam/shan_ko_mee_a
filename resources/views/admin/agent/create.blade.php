@@ -136,9 +136,10 @@
             </div>
 
             <div class="custom-form-group">
-              <label>Max Balance : </label>
-              <span class="badge badge-sm bg-gradient-success">{{auth()->user()->balanceFloat}}</span>
+                <label>Max Balance : </label>
+                <span class="badge badge-sm bg-gradient-success">{{ auth()->user()->wallet->balance }}</span>
             </div>
+
             <div class="custom-form-group">
               <label for="title">Amount</label>
               <input type="text"  name="amount" class="form-control" value="{{old('amount')}}" placeholder="0.00">

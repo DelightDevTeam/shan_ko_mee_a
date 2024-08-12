@@ -10,12 +10,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Transaction extends Model
 {
     use HasFactory;
-     protected $fillable = [
-        'user_id',
-        'amount',
-        'transaction_name',
-        'type',
-    ];
+    //  protected $fillable = [
+    //     'user_id',
+    //     'amount',
+    //     'transaction_name',
+    //     'type',
+    // ];
+
+    protected $fillable = [
+    'user_id',
+    'wallet_id',
+    'amount',
+    'transaction_name',
+    'type',
+    'meta',
+    'uuid',
+    'payable_type',
+    'payable_id',
+    'target_user_id',
+];
+
 
     protected $casts = [
         'wallet_id' => 'int',
